@@ -1,0 +1,37 @@
+physical_properties:
+  mass: 2.0 # kg
+  inertia: [1.959e-4, 1.999e-4, 1.064e-4, 0.0, 0.0, 0.0] # kg m^2
+  cross_sectional_area: 0.01 # m^2
+  Cd: 2.0 # drag coefficient
+
+dynamics:
+  gravity_order: 10
+  drag: true
+  third_body_moon: true
+  third_body_sun: true
+
+sensors:
+  gyro:
+    rotate_std_deg: 0.01
+    noise_std_deg: 0.2
+    initial_bias_deg: 0.5
+    bias_std_noise: 1e-2
+  magnetometer:
+    noise_std_deg: 2.0
+  sun_vector:
+    noise_std_deg: 0.1
+    rotation_offset_deg: 0.0
+    lux_max_range: 144000
+    
+actuator:
+  magnetorquer:
+    max_voltage: 5
+    coils_per_layer: 32.0
+    layers: 2.0
+    trace_width: 0.0007317 # m
+    gap_width: 8.999e-5 # m
+    trace_thickness: 3.556e-5 # 1oz copper - 35um = 1.4 mils
+    max_current_rating: 1 # A
+    max_power: 5 # W
+
+
