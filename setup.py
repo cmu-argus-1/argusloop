@@ -18,7 +18,7 @@ with open('requirements.txt') as fp:
 
 setup(
     name='argusloop',
-    version = '0.0.0',
+    version = '0.0.1',
     packages = find_packages(),
     description = "High-fidelity simulator for the development of the Argus flight software suite and GNC algorithms.",
     long_description = long_description,
