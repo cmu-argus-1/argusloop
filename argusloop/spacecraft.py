@@ -11,7 +11,7 @@ from scipy.linalg import expm
 from transformations import L, R
 
 from brahe import EOP
-EOP.load("simulation/data/finals.all.iau2000.txt")
+EOP.load("data/finals.all.iau2000.txt")
 
 class Spacecraft:
 
