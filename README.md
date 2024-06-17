@@ -22,3 +22,10 @@ Features include:
 - Detailed configuration
 
 TODO
+- Config file
+- Add visualizer attitude
+- Add visualizer orbit
+- Setup CI
+- Unit tests
+- Power monitor
+- Ground pass 
