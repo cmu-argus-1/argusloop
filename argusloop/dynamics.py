@@ -1,6 +1,6 @@
 import numpy as np
 
-from simulation.transformations import L
+from transformations import L
 
 
 def quat_kinematics(q, ω):
