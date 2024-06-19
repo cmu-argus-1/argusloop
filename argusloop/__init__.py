@@ -1,4 +1,3 @@
-from argusloop import actuators
 from argusloop import astrodynamics
 from argusloop import drag
 from argusloop import dynamics
@@ -11,4 +10,7 @@ from argusloop import visualizer
 
 
 
+from argusloop.spacecraft import Spacecraft
 from argusloop.visualizer import Visualizer
+from argusloop.sensors import GPS, Gyroscope, Magnetometer, SunVector
+from argusloop.magnetorquer import Magnetorquer
