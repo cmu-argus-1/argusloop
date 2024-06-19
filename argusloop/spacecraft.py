@@ -7,9 +7,9 @@ from brahe.epoch import Epoch
 from brahe.orbit_dynamics.gravity import accel_gravity, accel_thirdbody_moon, accel_thirdbody_sun
 from scipy.linalg import expm
 
-from .astrodynamics import get_CART_from_OSC, get_OSC_from_CART
-from .drag import accel_drag
-from .transformations import L, R
+from argusloop.astrodynamics import get_CART_from_OSC, get_OSC_from_CART
+from argusloop.drag import accel_drag
+from argusloop.transformations import L, R
 
 EOP.load(os.path.join(os.path.dirname(__file__), "../data/finals.all.iau2000.txt"))
 

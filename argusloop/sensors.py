@@ -1,9 +1,9 @@
 import brahe
 import numpy as np
 
-from .astrodynamics import R_EARTH
-from .magnetic import get_magnetic_field_ECI
-from .transformations import dcm_from_phi, dcm_from_q
+from argusloop.astrodynamics import R_EARTH
+from argusloop.magnetic import get_magnetic_field_ECI
+from argusloop.transformations import dcm_from_phi, dcm_from_q
 
 
 def apply_SO3_noise(vec, std):

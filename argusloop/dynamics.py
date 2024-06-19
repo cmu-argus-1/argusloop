@@ -1,6 +1,6 @@
 import numpy as np
 
-from .transformations import L
+from argusloop.transformations import L
 
 
 def quat_kinematics(q, ω):
