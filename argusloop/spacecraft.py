@@ -1,17 +1,18 @@
+import os
 from datetime import datetime, timedelta
 
-import astrodynamics as astro
-import drag as drag
 import numpy as np
-from brahe import frames
+from brahe import EOP, frames
 from brahe.epoch import Epoch
-
 from brahe.orbit_dynamics.gravity import accel_gravity, accel_thirdbody_moon, accel_thirdbody_sun
 from scipy.linalg import expm
-from transformations import L, R
 
-from brahe import EOP
-EOP.load("data/finals.all.iau2000.txt")
+from .astrodynamics import get_CART_from_OSC, get_OSC_from_CART
+from .drag import accel_drag
+from .transformations import L, R
+
+EOP.load(os.path.join(os.path.dirname(__file__), "../data/finals.all.iau2000.txt"))
+
 
 class Spacecraft:
 
@@ -28,20 +29,15 @@ class Spacecraft:
         "inertia": np.array([[0.0033, 0.0, 0.0], [0.0, 0.0033, 0.0], [0.0, 0.0, 0.0033]]),
         "Cd": 2,
         "crossA": 0.01,  # m^2
-        "flexible": False
+        "flexible": False,
     }
 
     µ = 3.986004418e14
 
     # Normalized surface normals
-    __surface_normals = np.array([
-                        [1.0, 0.0, 0.0],
-                        [-1.0, 0.0, 0.0],
-                        [0.0, 1.0, 0.0],
-                        [0.0, -1.0, 0.0],
-                        [0.0, 0.0, 1.0],
-                        [0.0, 0.0, -1.0]
-                    ])
+    __surface_normals = np.array(
+        [[1.0, 0.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 0.0, -1.0]]
+    )
 
     def __init__(self, configuration):
 
@@ -59,7 +55,7 @@ class Spacecraft:
 
         orbit = None
         if "initial_orbit_oe" in configuration:
-            orbit = astro.get_CART_from_OSC(configuration["initial_orbit_oe"])
+            orbit = get_CART_from_OSC(configuration["initial_orbit_oe"])
         else:
             orbit = np.array(configuration["initial_orbit_eci"])
 
@@ -77,7 +73,7 @@ class Spacecraft:
             self._dt = configuration["dt"]
         else:
             raise ValueError("Negative dt value")
-        
+
         # Epoch
         if "epoch" in configuration:
             if isinstance(configuration["epoch"], datetime):
@@ -94,7 +90,7 @@ class Spacecraft:
             if len(configuration["inertia"]) == 6:
 
                 Iv = configuration["inertia"]
-                inertia = np.array([[Iv[0],Iv[3],Iv[4]],[Iv[3], Iv[1], Iv[5]],[Iv[4], Iv[5], Iv[2]]])
+                inertia = np.array([[Iv[0], Iv[3], Iv[4]], [Iv[3], Iv[1], Iv[5]], [Iv[4], Iv[5], Iv[2]]])
 
                 # Check positive-definiteness
                 if np.all(np.linalg.eigvals(inertia) > 0):
@@ -157,7 +153,7 @@ class Spacecraft:
     @property
     def attitude(self):
         return self._state[6:10]
-    
+
     @property
     def angular_velocity(self):
         return self._state[10:13]
@@ -165,7 +161,7 @@ class Spacecraft:
     @property
     def orbit_eci(self):
         return self._state[0:6]
-    
+
     @property
     def surface_normals(self):
         return self.__surface_normals
@@ -180,7 +176,7 @@ class Spacecraft:
         5. _ω_, Argument of Perigee [ramd]
         6. _M_, Mean anomaly [rad]
         """
-        return astro.get_OSC_from_CART(self._state[0:6])
+        return get_OSC_from_CART(self._state[0:6])
 
     def orbital_accelerations(self):
 
@@ -197,14 +193,7 @@ class Spacecraft:
         )
 
         if self._drag:
-            a += drag.accel_drag(
-                self.epoch_dt,
-                x_eci[0:6],
-                self._mass,
-                self._crossA,
-                self._Cd,
-                R_i2b
-            )
+            a += accel_drag(self.epoch_dt, x_eci[0:6], self._mass, self._crossA, self._Cd, R_i2b)
 
         if self._third_body:
             # acc due to third body moon
@@ -264,20 +253,21 @@ if __name__ == "__main__":
         "gravity_order": 5,
         "gravity_degree": 5,
         "drag": True,
-        "third_body": True
+        "third_body": True,
     }
 
     spacecraft = Spacecraft(config)
     u = np.zeros(3)
 
-    from sensors import Magnetometer, Gyroscope, SunVector, GPS
+    from sensors import GPS, Gyroscope, Magnetometer, SunVector
+
     mag = Magnetometer(2.0)
     gyro = Gyroscope(0.01, 0.2, 0.5)
     sun_vec = SunVector(0.1, 0.0)
     gps = GPS(10, 0.1)
     from magnetorquer import Magnetorquer
-    torquer = Magnetorquer()
 
+    torquer = Magnetorquer()
 
     for i in range(10):
         spacecraft.advance(u)
@@ -291,4 +281,3 @@ if __name__ == "__main__":
         print("GPS (ECEF): ", gps.measure(spacecraft))
         print("Dipole Moment (voltage): ", torquer.set_dipole_moment_voltage(4))
         print("Dipole Moment (current): ", torquer.set_dipole_moment_current(0.32))
-        

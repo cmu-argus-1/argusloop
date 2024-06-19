@@ -1,8 +1,7 @@
-from brahe import frames, coordinates
+import numpy as np
 import pyIGRF
+from brahe import coordinates, frames
 
-import numpy as np
-import numpy as np
 
 def get_magnetic_field_ECI(epoch, x):
 
@@ -18,10 +17,10 @@ def get_magnetic_field_ECI(epoch, x):
         Z is vertical component (+ve down)
         F is total intensity """
     # North-East-Down (NED) frame
-    _, _, _, BN, BE, BD, _ = pyIGRF.igrf_value(latitude, longitude, altitude/1000, epoch.year()) # Need altitue in km
+    _, _, _, BN, BE, BD, _ = pyIGRF.igrf_value(latitude, longitude, altitude / 1000, epoch.year())  # Need altitue in km
 
-    NED_nT = np.array([[BN], [BE], [-BD]]) # nanoTesla
-    
+    NED_nT = np.array([[BN], [BE], [-BD]])  # nanoTesla
+
     # NED to ECEF
     B_ECEF_nT = ROT_NED2ECEF(longitude, latitude) @ NED_nT
     # ECEF to ECI
@@ -33,16 +32,18 @@ def get_magnetic_field_ECI(epoch, x):
     return B_ECI_nT
 
 
-
 def ROT_NED2ECEF(longitude, latitude):
     # Takes degrees
 
     ϕ = np.radians(latitude)
     λ = np.radians(longitude)
 
-    NED2ECEF_Q = np.array([[-np.sin(ϕ)*np.cos(λ), -np.sin(λ), -np.cos(ϕ)*np.cos(λ)],
-                            [-np.sin(ϕ)*np.sin(λ), np.cos(λ), -np.cos(ϕ)*np.sin(λ)],
-                            [np.cos(ϕ), 0.0, -np.sin(ϕ)]])
+    NED2ECEF_Q = np.array(
+        [
+            [-np.sin(ϕ) * np.cos(λ), -np.sin(λ), -np.cos(ϕ) * np.cos(λ)],
+            [-np.sin(ϕ) * np.sin(λ), np.cos(λ), -np.cos(ϕ) * np.sin(λ)],
+            [np.cos(ϕ), 0.0, -np.sin(ϕ)],
+        ]
+    )
 
     return NED2ECEF_Q
-

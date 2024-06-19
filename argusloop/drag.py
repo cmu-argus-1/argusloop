@@ -9,14 +9,15 @@ References:
 
 import numpy as np
 import pandas as pd
-from brahe import coordinates
 import spaceweather
+from brahe import coordinates
 from nrlmsise00 import msise_flat
 
 OMEGA_EARTH = 7.292115146706979e-5  # [rad/s] (Vallado 4th Ed page 222)
 
 
 _SW = None
+
 
 def initialize_spaceweather():
     global _SW
@@ -25,10 +26,11 @@ def initialize_spaceweather():
     if _SW.index.tz is None:
         _SW = _SW.tz_localize("utc")
 
+
 initialize_spaceweather()
 
 
-def compute_density_nrlmsise00(epoch_dt, altitude, latitude, longitude): 
+def compute_density_nrlmsise00(epoch_dt, altitude, latitude, longitude):
 
     epoch = pd.to_datetime(epoch_dt, utc=True)
 
@@ -36,12 +38,14 @@ def compute_density_nrlmsise00(epoch_dt, altitude, latitude, longitude):
     epoch_prev = epoch - pd.to_timedelta("1d")
 
     # Retrieve the specific data
-    ap =  _SW.at[epoch.floor("D"), "Apavg"]
-    f107 =  _SW.at[epoch_prev.floor("D"), "f107_obs"]
-    f107a =  _SW.at[epoch.floor("D"), "f107_81ctr_obs"]
+    ap = _SW.at[epoch.floor("D"), "Apavg"]
+    f107 = _SW.at[epoch_prev.floor("D"), "f107_obs"]
+    f107a = _SW.at[epoch.floor("D"), "f107_81ctr_obs"]
 
-    rho = msise_flat(epoch_dt, altitude, latitude, longitude, f107a, f107, ap, method="gt7d")[5] # total mass density [g cm^-3]
-    rho = rho * 1000 # convert to [kg m^-3]
+    rho = msise_flat(epoch_dt, altitude, latitude, longitude, f107a, f107, ap, method="gt7d")[
+        5
+    ]  # total mass density [g cm^-3]
+    rho = rho * 1000  # convert to [kg m^-3]
     return rho
 
 
@@ -81,5 +85,3 @@ def accel_drag(epoch_dt, x, mass, area, Cd, T):
     a_drag = np.dot(T.T, a_tod)
 
     return a_drag
-
-

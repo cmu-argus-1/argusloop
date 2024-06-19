@@ -1,16 +1,14 @@
-from argusloop import astrodynamics
-from argusloop import drag
-from argusloop import dynamics
-from argusloop import magnetic
-from argusloop import magnetorquer
-from argusloop import sensors
-from argusloop import spacecraft
-from argusloop import transformations
-from argusloop import visualizer
+from .magnetorquer import Magnetorquer
+from .sensors import GPS, Gyroscope, Magnetometer, SunVector
+from .spacecraft import Spacecraft
+from .visualizer import Visualizer
 
-
-
-from argusloop.spacecraft import Spacecraft
-from argusloop.visualizer import Visualizer
-from argusloop.sensors import GPS, Gyroscope, Magnetometer, SunVector
-from argusloop.magnetorquer import Magnetorquer
+"""import astrodynamics
+import drag
+import dynamics
+import magnetic
+import magnetorquer
+import sensors
+import spacecraft
+import transformations
+import visualizer"""

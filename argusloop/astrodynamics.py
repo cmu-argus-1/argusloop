@@ -3,6 +3,7 @@ import numpy as np
 
 R_EARTH = 6378.0e3  # m
 
+
 def semi_major_axis(rp, ra):
     """
     rp: periapsis -> radius from the central body to the nearest point on the orbital path
