@@ -40,16 +40,20 @@ class Magnetorquer:
 
     def set_dipole_moment_voltage(self, voltage):
         if voltage > self.max_voltage:
-            raise ValueError("Voltage exceeds maximum voltage rating.")
+            print("Voltage exceeds maximum voltage rating. Defaulting to maximum voltage.")
+            voltage = self.max_voltage
+
         # Current driver is PWM
         I = voltage / self.R
         if I > self.max_current:
-            raise ValueError(f"Current exceeds maximum power limit of {self.max_power} W.")  # For now, raise an error
+            print(f"Current exceeds maximum power limit of {self.max_power} W. Defaulting to maximum power.")
+            I = self.max_current  
         dipole_moment = self.N_per_face * I * self.A_cross
         return dipole_moment
 
     def set_dipole_moment_current(self, current):
         if current > self.max_current:
-            raise ValueError(f"Current exceeds maximum power limit of {self.max_power} W.")
+            print(f"Current exceeds maximum power limit of {self.max_power} W. Defaulting to maximum power.")
+            current = self.max_current
         dipole_moment = self.N_per_face * current * self.A_cross
         return dipole_moment
