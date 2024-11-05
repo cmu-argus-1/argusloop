@@ -9,7 +9,8 @@ from scipy.linalg import expm
 
 from argusloop.astrodynamics import get_CART_from_OSC, get_OSC_from_CART
 from argusloop.drag import accel_drag
-from argusloop.transformations import L, R
+from argusloop.transformations import L, R, dcm_from_q
+from argusloop.magnetic import get_magnetic_field_ECI
 
 EOP.load(os.path.join(os.path.dirname(__file__), "../data/finals.all.iau2000.txt"))
 
@@ -240,6 +241,11 @@ class Spacecraft:
         self.epoch_dt += timedelta(seconds=self._dt)
 
 
+    def compute_torque(self, moment):
+        B_ECI = get_magnetic_field_ECI(self.epoch, self.orbit_eci)
+        B_body = dcm_from_q(self.attitude) @ B_ECI
+        return np.cross(moment, B_body)
+
 # Temporary local testing
 if __name__ == "__main__":
 
@@ -286,4 +292,9 @@ if __name__ == "__main__":
             print("GPS (ECEF): ", gps.measure(spacecraft))
             print("Dipole Moment (voltage): ", torquer.set_dipole_moment_voltage(4))
             print("Dipole Moment (current): ", torquer.set_dipole_moment_current(0.32))
+            print("Torque: ", spacecraft.compute_torque(np.array([
+                torquer.set_dipole_moment_voltage(4),
+                torquer.set_dipole_moment_voltage(4),
+                0.0
+            ])))
             time.sleep(1)
