@@ -85,6 +85,10 @@ class SunVector:
             lux = np.dot(normals, vec_sun_body)
             # Negative ones means no field of view of the sun, so 0 lux
             lux[lux < 0.0] = 0.0
+
+            # Normalize 
+            lux = ((lux / np.linalg.norm(lux)) * self.lux_max_range).astype(int)
+            
             return lux
 
     def eclipse_state(self, spacecraft):

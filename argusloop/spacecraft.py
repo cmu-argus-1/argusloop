@@ -246,7 +246,7 @@ if __name__ == "__main__":
     config = {
         "mass": 2.0,
         "inertia": [10, 20, 30, 0.0, 0.0, 0.0],
-        "dt": 1.0,
+        "dt": 0.1,
         "epoch": datetime(2024, 6, 1, 12, 0, 0, 0),
         "initial_attitude": [1.0, 0, 0, 0, 0.1, -0.2, 0.3],
         "initial_orbit_oe": [6.92e6, 0, 0, 0, 0, 0],
@@ -266,18 +266,24 @@ if __name__ == "__main__":
     sun_vec = SunVector(0.1, 0.0)
     gps = GPS(10, 0.1)
     from magnetorquer import Magnetorquer
+    import time
 
     torquer = Magnetorquer()
-
-    for i in range(10):
+    i = 0
+    for i in range(8640000):
         spacecraft.advance(u)
-        print("Orbit (ECI): ", spacecraft.orbit_eci)
-        print("Attitude: ", spacecraft.attitude)
-        print("Angular Velocity: ", spacecraft.angular_velocity)
-        print("Gyroscope: ", gyro.measure(spacecraft))
-        print("Magnetometer: ", mag.measure(spacecraft))
-        print("Measured Lux: ", sun_vec.measure_lux(spacecraft))
-        print("Measured Sun Vector: ", sun_vec.measure(spacecraft))
-        print("GPS (ECEF): ", gps.measure(spacecraft))
-        print("Dipole Moment (voltage): ", torquer.set_dipole_moment_voltage(4))
-        print("Dipole Moment (current): ", torquer.set_dipole_moment_current(0.32))
+        i += 1
+
+        if i % 10 == 0:
+            print("Time: ", spacecraft.epoch)
+            print("Orbit (ECI): ", spacecraft.orbit_eci)
+            print("Attitude: ", spacecraft.attitude)
+            print("Angular Velocity: ", spacecraft.angular_velocity)
+            print("Gyroscope: ", gyro.measure(spacecraft))
+            print("Magnetometer: ", mag.measure(spacecraft))
+            print("Measured Lux: ", sun_vec.measure_lux(spacecraft))
+            print("Measured Sun Vector: ", sun_vec.measure(spacecraft))
+            print("GPS (ECEF): ", gps.measure(spacecraft))
+            print("Dipole Moment (voltage): ", torquer.set_dipole_moment_voltage(4))
+            print("Dipole Moment (current): ", torquer.set_dipole_moment_current(0.32))
+            time.sleep(1)
