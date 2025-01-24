@@ -12,8 +12,7 @@ from argusloop.drag import accel_drag
 from argusloop.transformations import L, R, dcm_from_q
 from argusloop.magnetic import get_magnetic_field_ECI
 
-EOP.load(os.path.join(os.path.dirname(__file__), "../data/finals.all.iau2000.txt"))
-
+EOP.load(os.path.join(os.path.dirname(__file__), "data", "finals.all.iau2000.txt"))
 
 class Spacecraft:
 
